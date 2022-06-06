@@ -1,0 +1,21 @@
+{
+  "name": "nodejs-file-manager-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vladislav-Cheremisin/nodejs-file-manager-CLI.git"
+  },
+  "author": "Vladislav Cheremisin <vladislav@cheremis.in>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Vladislav-Cheremisin/nodejs-file-manager-CLI/issues"
+  },
+  "homepage": "https://github.com/Vladislav-Cheremisin/nodejs-file-manager-CLI#readme"
+}
