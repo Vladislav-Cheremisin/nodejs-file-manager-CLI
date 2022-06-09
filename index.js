@@ -18,15 +18,31 @@ const startFileManager = async () => {
       process.exit();
     });
 
-    readable.on("data", (chunk) => {
-      const string = chunk.toString();
+    readable.on("data", async (chunk) => {
+      try {
+        const string = chunk.toString().trim();
+        let isInvalid = false;
 
-      if (string.includes(".exit")) {
-        writable.write(`Thank you for using File Manager, ${username}!\n`);
-        process.exit();
+        switch (string) {
+          case ".exit":
+            writable.write(`Thank you for using File Manager, ${username}!\n`);
+            process.exit();
+            break;
+          default:
+            isInvalid = true;
+            writable.write(
+              `Invalid input, please try again or use "help" to read about available commands\n`
+            );
+        }
+
+        if (!isInvalid) {
+          showDirInfo(currentDir);
+        }
+      } catch (err) {
+        writable.write(
+          `Operation failed, please try again or use "help" to read about available commands\n`
+        );
       }
-
-      showDirInfo(currentDir);
     });
   } catch (err) {
     if (err) {
