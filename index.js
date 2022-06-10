@@ -1,47 +1,48 @@
 import getUserName from "./utils/getUserName.js";
-import showDirInfo from "./utils/showDirInfo.js";
-import os from "os";
+import ChunkData from "./utils/getChunkData.js";
+import nav from "./src/navigation.js";
 
 const startFileManager = async () => {
   try {
     const readable = process.stdin;
     const writable = process.stdout;
     const username = getUserName();
-    const homeDir = os.homedir();
-    let currentDir = homeDir;
 
-    writable.write(`Welcome to the File Manager, ${username}\n`);
-    showDirInfo(currentDir);
+    writable.write(`Welcome to the File Manager, ${username}!\n`);
+    nav.showDirInfo();
 
     process.on("SIGINT", () => {
-      writable.write(`Thank you for using File Manager, ${username}!\n`);
+      writable.write(`Thank you for using File Manager, ${username}!\n\n`);
       process.exit();
     });
 
     readable.on("data", async (chunk) => {
       try {
-        const string = chunk.toString().trim();
-        let isInvalid = false;
+        const chunkData = new ChunkData(chunk.toString().trim());
 
-        switch (string) {
+        switch (chunkData.command) {
           case ".exit":
-            writable.write(`Thank you for using File Manager, ${username}!\n`);
+            writable.write(
+              `Thank you for using File Manager, ${username}!\n\n`
+            );
             process.exit();
             break;
+          case "up":
+            nav.up();
+            break;
+          case "ls":
+            nav.ls();
+            break;
+          case "cd":
+            nav.cd(chunkData.args);
+            break;
           default:
-            isInvalid = true;
-            writable.write(
-              `Invalid input, please try again or use "help" to read about available commands\n`
-            );
-        }
-
-        if (!isInvalid) {
-          showDirInfo(currentDir);
+            nav.showInvalidInput();
+            nav.showDirInfo();
         }
       } catch (err) {
-        writable.write(
-          `Operation failed, please try again or use "help" to read about available commands\n`
-        );
+        console.log(err);
+        nav.showOperationError();
       }
     });
   } catch (err) {
