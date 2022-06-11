@@ -53,6 +53,9 @@ const startFileManager = async () => {
           case "rn":
             fsOperations.rn(chunkData.args);
             break;
+          case "cp":
+            fsOperations.cp(chunkData.args);
+            break;
           default:
             appErrors.showInvalidInput();
         }
