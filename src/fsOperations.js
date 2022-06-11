@@ -1,4 +1,3 @@
-import stream from "stream";
 import fsPromise from "fs/promises";
 import fs from "fs";
 import path from "path";
@@ -13,10 +12,10 @@ class FsOperations {
   }
 
   async cat(args) {
-    if (!args || args.length !== 1) {
-      appErrors.showIncorrectArgsError();
-    } else {
-      try {
+    try {
+      if (!args || args.length !== 1) {
+        appErrors.showIncorrectArgsError();
+      } else {
         this.currentDir = dirData.getDirData();
         const pathArg = args[0];
         const isPathAbsolute = path.isAbsolute(pathArg);
@@ -52,10 +51,10 @@ class FsOperations {
 
           dirData.showDirInfo();
         }
-      } catch (err) {
-        if (err) {
-          appErrors.showWrongPathError();
-        }
+      }
+    } catch (err) {
+      if (err) {
+        appErrors.showWrongPathError();
       }
     }
   }
@@ -77,9 +76,15 @@ class FsOperations {
           })
           .catch((err) => {
             if (err) {
-              this.writable.write(
-                `Operation failed! File with name ${fileName} already exists.\n`
-              );
+              if (path.isAbsolute(fileName)) {
+                this.writable.write(
+                  `Operation failed! You should enter name for new file as argument!\n`
+                );
+              } else {
+                this.writable.write(
+                  `Operation failed! File with name ${fileName} already exists.\n`
+                );
+              }
 
               dirData.showDirInfo();
             }
@@ -88,6 +93,40 @@ class FsOperations {
     } catch (err) {
       if (err) {
         appErrors.showIncorrectArgsError();
+      }
+    }
+  }
+
+  async rn(args) {
+    try {
+      if (!args || args.length !== 2) {
+        appErrors.showIncorrectArgsError();
+      } else {
+        this.currentDir = dirData.getDirData();
+        const pathArg = args[0];
+        const newFileName = args[1];
+        const isPathAbsolute = path.isAbsolute(pathArg);
+        let pathAbs = null;
+
+        if (isPathAbsolute) {
+          pathAbs = pathArg;
+        } else {
+          pathAbs = path.join(this.currentDir, pathArg);
+        }
+
+        let newFilePath = pathAbs.split(this.pathSep);
+        newFilePath.pop();
+        newFilePath.push(newFileName);
+        newFilePath = newFilePath.join(this.pathSep);
+
+        await fsPromise.access(pathAbs);
+        await fsPromise.rename(pathAbs, newFilePath);
+
+        dirData.showDirInfo();
+      }
+    } catch (err) {
+      if (err) {
+        appErrors.showWrongPathError();
       }
     }
   }

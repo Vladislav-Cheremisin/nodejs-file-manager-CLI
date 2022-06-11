@@ -10,33 +10,26 @@ class Navigator {
     this.pathSep = path.sep;
   }
 
-  _isRootDir() {
-    const pathParts = this.currentDir.split(this.pathSep);
-    const rootDir = pathParts[0] + this.pathSep;
-
-    if (this.currentDir === rootDir) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   up(args) {
     if (args.length) {
       appErrors.showUselessArgsError();
     } else {
-      if (!this._isRootDir()) {
-        const pathParts = this.currentDir.split(this.pathSep);
+      const pathParts = this.currentDir.split(this.pathSep);
 
-        if (pathParts.length > 2) {
-          this.currentDir = pathParts
-            .splice(0, pathParts.length - 1)
-            .join(this.pathSep);
-          dirData.setDirData(this.currentDir);
-        } else {
-          this.currentDir = pathParts[0] + this.pathSep;
-          dirData.setDirData(this.currentDir);
-        }
+      if (pathParts.length > 2) {
+        const newPath = pathParts
+          .splice(0, pathParts.length - 1)
+          .join(this.pathSep);
+
+        dirData.setDirData(newPath);
+
+        this.currentDir = dirData.getDirData();
+      } else {
+        const newPath = pathParts[0] + this.pathSep;
+
+        dirData.setDirData(newPath);
+
+        this.currentDir = dirData.getDirData();
       }
 
       dirData.showDirInfo();
@@ -44,18 +37,18 @@ class Navigator {
   }
 
   async ls(args) {
-    if (args.length) {
-      appErrors.showUselessArgsError();
-    } else {
-      try {
+    try {
+      if (args.length) {
+        appErrors.showUselessArgsError();
+      } else {
         console.log(await fs.readdir(this.currentDir));
 
         dirData.showDirInfo();
-      } catch (err) {
-        if (err) {
-          appErrors.showOperationError();
-          dirData.showDirInfo();
-        }
+      }
+    } catch (err) {
+      if (err) {
+        appErrors.showOperationError();
+        dirData.showDirInfo();
       }
     }
   }
@@ -78,8 +71,9 @@ class Navigator {
         await fs.access(pathAbs);
 
         if ((await fs.lstat(pathAbs)).isDirectory()) {
-          this.currentDir = pathAbs;
-          dirData.setDirData(this.currentDir);
+          dirData.setDirData(pathAbs);
+
+          this.currentDir = dirData.getDirData();
         } else {
           this.writable.write(
             `Operation failed! ${path.basename(
