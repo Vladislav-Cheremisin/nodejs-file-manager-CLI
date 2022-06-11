@@ -14,12 +14,22 @@ class AppErrors {
     dirData.showDirInfo();
   }
 
-  showIncorrectArgsError() {
+  showUselessArgsError() {
     this.writable.write(
       "Operation failed! Please use this command without any arguments.\n"
     );
 
     dirData.showDirInfo();
+  }
+
+  showIncorrectArgsError() {
+    this.writable.write("Operation failed! Entered argument was incorrect.\n");
+  }
+
+  showWrongPathError() {
+    this.writable.write(
+      "Operation failed! Entered path is wrong, try again with using correct path.\n"
+    );
   }
 
   showInvalidInput() {

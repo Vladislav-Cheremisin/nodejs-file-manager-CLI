@@ -26,7 +26,7 @@ const startFileManager = async () => {
         switch (chunkData.command) {
           case ".exit":
             if (chunkData.args.length) {
-              appErrors.showIncorrectArgsError();
+              appErrors.showUselessArgsError();
             } else {
               writable.write(
                 `Thank you for using File Manager, ${username}!\n\n`

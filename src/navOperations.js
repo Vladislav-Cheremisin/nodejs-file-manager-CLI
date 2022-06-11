@@ -23,7 +23,7 @@ class Navigator {
 
   up(args) {
     if (args.length) {
-      appErrors.showIncorrectArgsError();
+      appErrors.showUselessArgsError();
     } else {
       if (!this._isRootDir()) {
         const pathParts = this.currentDir.split(this.pathSep);
@@ -45,7 +45,7 @@ class Navigator {
 
   async ls(args) {
     if (args.length) {
-      appErrors.showIncorrectArgsError();
+      appErrors.showUselessArgsError();
     } else {
       try {
         console.log(await fs.readdir(this.currentDir));
@@ -53,10 +53,7 @@ class Navigator {
         dirData.showDirInfo();
       } catch (err) {
         if (err) {
-          this.writable.write(
-            "Operation failed! Cannot read content from system folder, please change it with using 'up' command and try again\n"
-          );
-
+          appErrors.showOperationError();
           dirData.showDirInfo();
         }
       }
@@ -66,10 +63,7 @@ class Navigator {
   async cd(args) {
     try {
       if (!args || args.length !== 1) {
-        this.writable.write(
-          "Operation failed! Entered argument was incorrect.\n"
-        );
-
+        appErrors.showIncorrectArgsError();
         dirData.showDirInfo();
       } else {
         const pathArg = args[0];
@@ -99,10 +93,7 @@ class Navigator {
       }
     } catch (err) {
       if (err) {
-        this.writable.write(
-          "Operation failed! Entered path is wrong, try again with using correct path.\n"
-        );
-
+        appErrors.showWrongPathError();
         dirData.showDirInfo();
       }
     }

@@ -1,7 +1,9 @@
-import os from "os";
-import fs from "fs/promises";
+import stream from "stream";
+import fsPromise from "fs/promises";
+import fs from "fs";
 import path from "path";
 import dirData from "./dirData.js";
+import appErrors from "./appErrors.js";
 
 class FsOperations {
   constructor() {
@@ -11,9 +13,51 @@ class FsOperations {
   }
 
   async cat(args) {
-    this.currentDir = dirData.getDirData();
+    if (!args || args.length !== 1) {
+      appErrors.showIncorrectArgsError();
+    } else {
+      try {
+        this.currentDir = dirData.getDirData();
+        const pathArg = args[0];
+        const isPathAbsolute = path.isAbsolute(pathArg);
+        let pathAbs = null;
 
-    console.log(this.currentDir);
+        if (isPathAbsolute) {
+          pathAbs = pathArg;
+        } else {
+          pathAbs = path.join(this.currentDir, pathArg);
+        }
+
+        await fsPromise.access(pathAbs);
+
+        if ((await fsPromise.lstat(pathAbs)).isFile()) {
+          const readable = fs.createReadStream(pathAbs);
+
+          const stream = readable.pipe(this.writable).on("error", (err) => {
+            if (err) {
+              appErrors.showOperationError();
+            }
+          });
+
+          readable.on("close", () => {
+            this.writable.write("\n");
+            dirData.showDirInfo();
+          });
+        } else {
+          this.writable.write(
+            `Operation failed! ${path.basename(
+              pathAbs
+            )} is folder or system file!\n`
+          );
+
+          dirData.showDirInfo();
+        }
+      } catch (err) {
+        if (err) {
+          appErrors.showWrongPathError();
+        }
+      }
+    }
   }
 }
 
