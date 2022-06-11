@@ -122,6 +122,10 @@ class FsOperations {
         await fsPromise.access(pathAbs);
         await fsPromise.rename(pathAbs, newFilePath);
 
+        this.writable.write(
+          `${path.basename(pathAbs)} was renamed successfully.\n`
+        );
+
         dirData.showDirInfo();
       }
     } catch (err) {
@@ -210,10 +214,51 @@ class FsOperations {
       }
     }
   }
+
+  async rm(args) {
+    try {
+      if (!args || args.length !== 1) {
+        appErrors.showIncorrectArgsError();
+      } else {
+        this.currentDir = dirData.getDirData();
+        const filePath = args[0];
+        let pathAbs = null;
+
+        if (path.isAbsolute(filePath)) {
+          pathAbs = filePath;
+        } else {
+          pathAbs = path.join(this.currentDir, filePath);
+        }
+
+        await fsPromise
+          .access(pathAbs)
+          .then(() => {
+            fsPromise.unlink(pathAbs);
+
+            this.writable.write(
+              `${path.basename(pathAbs)} was removed successfully.\n`
+            );
+
+            dirData.showDirInfo();
+          })
+          .catch((err) => {
+            if (err) {
+              this.writable.write(
+                `Operation failed! ${path.basename(pathAbs)} doesn't exist.\n`
+              );
+
+              dirData.showDirInfo();
+            }
+          });
+      }
+    } catch (err) {
+      if (err) {
+        appErrors.showIncorrectArgsError();
+      }
+    }
+  }
 }
 
 const fsOperations = new FsOperations();
 
 export default fsOperations;
-
-// cp C:\Users\wowju\desktop\text.txt C:\users\wowju\desktop\soft
