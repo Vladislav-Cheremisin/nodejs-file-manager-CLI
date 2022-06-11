@@ -64,7 +64,6 @@ class Navigator {
     try {
       if (!args || args.length !== 1) {
         appErrors.showIncorrectArgsError();
-        dirData.showDirInfo();
       } else {
         const pathArg = args[0];
         const isPathAbsolute = path.isAbsolute(pathArg);
@@ -94,7 +93,6 @@ class Navigator {
     } catch (err) {
       if (err) {
         appErrors.showWrongPathError();
-        dirData.showDirInfo();
       }
     }
   }

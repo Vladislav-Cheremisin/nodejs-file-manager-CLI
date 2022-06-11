@@ -33,7 +33,7 @@ class FsOperations {
         if ((await fsPromise.lstat(pathAbs)).isFile()) {
           const readable = fs.createReadStream(pathAbs);
 
-          const stream = readable.pipe(this.writable).on("error", (err) => {
+          readable.pipe(this.writable).on("error", (err) => {
             if (err) {
               appErrors.showOperationError();
             }
@@ -56,6 +56,38 @@ class FsOperations {
         if (err) {
           appErrors.showWrongPathError();
         }
+      }
+    }
+  }
+
+  async add(args) {
+    try {
+      if (!args || args.length !== 1) {
+        appErrors.showIncorrectArgsError();
+      } else {
+        this.currentDir = dirData.getDirData();
+        const fileName = args[0];
+
+        fsPromise
+          .writeFile(path.join(this.currentDir, fileName), "", {
+            flag: "wx",
+          })
+          .then(() => {
+            dirData.showDirInfo();
+          })
+          .catch((err) => {
+            if (err) {
+              this.writable.write(
+                `Operation failed! File with name ${fileName} already exists.\n`
+              );
+
+              dirData.showDirInfo();
+            }
+          });
+      }
+    } catch (err) {
+      if (err) {
+        appErrors.showIncorrectArgsError();
       }
     }
   }

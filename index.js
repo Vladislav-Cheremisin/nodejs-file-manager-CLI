@@ -47,6 +47,9 @@ const startFileManager = async () => {
           case "cat":
             fsOperations.cat(chunkData.args);
             break;
+          case "add":
+            fsOperations.add(chunkData.args);
+            break;
           default:
             appErrors.showInvalidInput();
         }

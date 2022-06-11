@@ -24,12 +24,16 @@ class AppErrors {
 
   showIncorrectArgsError() {
     this.writable.write("Operation failed! Entered argument was incorrect.\n");
+
+    dirData.showDirInfo();
   }
 
   showWrongPathError() {
     this.writable.write(
       "Operation failed! Entered path is wrong, try again with using correct path.\n"
     );
+
+    dirData.showDirInfo();
   }
 
   showInvalidInput() {
