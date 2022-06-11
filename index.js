@@ -1,5 +1,7 @@
 import getUserName from "./utils/getUserName.js";
 import ChunkData from "./utils/getChunkData.js";
+import dirData from "./src/dirData.js";
+import appErrors from "./src/appErrors.js";
 import nav from "./src/navigation.js";
 import fsOperations from "./src/fsOperations.js";
 
@@ -10,7 +12,7 @@ const startFileManager = async () => {
     const username = getUserName();
 
     writable.write(`Welcome to the File Manager, ${username}!\n`);
-    nav.showDirInfo();
+    dirData.showDirInfo();
 
     process.on("SIGINT", () => {
       writable.write(`Thank you for using File Manager, ${username}!\n\n`);
@@ -24,7 +26,7 @@ const startFileManager = async () => {
         switch (chunkData.command) {
           case ".exit":
             if (chunkData.args.length) {
-              nav.showIncorrectArgsError();
+              appErrors.showIncorrectArgsError();
             } else {
               writable.write(
                 `Thank you for using File Manager, ${username}!\n\n`
@@ -42,18 +44,21 @@ const startFileManager = async () => {
           case "cd":
             nav.cd(chunkData.args);
             break;
+          case "cat":
+            fsOperations.cat(chunkData.args);
+            break;
           default:
-            nav.showInvalidInput();
-            nav.showDirInfo();
+            appErrors.showInvalidInput();
         }
       } catch (err) {
-        console.log(err);
-        nav.showOperationError();
+        if (err) {
+          appErrors.showOperationError();
+        }
       }
     });
   } catch (err) {
     if (err) {
-      throw err;
+      appErrors.showFatalError();
     }
   }
 };

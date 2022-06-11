@@ -16,7 +16,7 @@ class ChunkData {
       const firstSymbol = el[0];
       const lastSymbol = el[el.length - 1];
 
-      /* Let's teach our application to work correct with quotes */
+      /* Let's teach our application to work correct with quotes in console */
 
       if (
         (firstSymbol === "'" || firstSymbol === '"') &&

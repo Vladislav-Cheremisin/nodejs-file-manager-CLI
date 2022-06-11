@@ -1,6 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import dirData from "./dirData.js";
+import appErrors from "./appErrors.js";
 
 class Navigator {
   constructor() {
@@ -20,33 +21,9 @@ class Navigator {
     }
   }
 
-  showDirInfo() {
-    this.writable.write(`You are currently in ${this.currentDir}\n`);
-  }
-
-  showOperationError() {
-    this.writable.write(
-      `Operation failed, please try again or use "help" to read about available commands.\n`
-    );
-
-    this.showDirInfo();
-  }
-
-  showIncorrectArgsError() {
-    this.writable.write(
-      "Operation failed! Please use this command without any arguments.\n"
-    );
-  }
-
-  showInvalidInput() {
-    this.writable.write(
-      `Invalid input, please try again or use "help" to read about available commands.\n`
-    );
-  }
-
   up(args) {
     if (args.length) {
-      nav.showIncorrectArgsError();
+      appErrors.showIncorrectArgsError();
     } else {
       if (!this._isRootDir()) {
         const pathParts = this.currentDir.split(this.pathSep);
@@ -61,26 +38,26 @@ class Navigator {
           dirData.setDirData(this.currentDir);
         }
       }
-    }
 
-    this.showDirInfo();
+      dirData.showDirInfo();
+    }
   }
 
   async ls(args) {
     if (args.length) {
-      nav.showIncorrectArgsError();
+      appErrors.showIncorrectArgsError();
     } else {
       try {
         console.log(await fs.readdir(this.currentDir));
 
-        this.showDirInfo();
+        dirData.showDirInfo();
       } catch (err) {
         if (err) {
           this.writable.write(
             "Operation failed! Cannot read content from system folder, please change it with using 'up' command and try again\n"
           );
 
-          this.showDirInfo();
+          dirData.showDirInfo();
         }
       }
     }
@@ -93,7 +70,7 @@ class Navigator {
           "Operation failed! Entered argument was incorrect.\n"
         );
 
-        this.showDirInfo();
+        dirData.showDirInfo();
       } else {
         const pathArg = args[0];
         const isPathAbsolute = path.isAbsolute(pathArg);
@@ -118,7 +95,7 @@ class Navigator {
           );
         }
 
-        this.showDirInfo();
+        dirData.showDirInfo();
       }
     } catch (err) {
       if (err) {
@@ -126,7 +103,7 @@ class Navigator {
           "Operation failed! Entered path is wrong, try again with using correct path.\n"
         );
 
-        this.showDirInfo();
+        dirData.showDirInfo();
       }
     }
   }
