@@ -2,7 +2,7 @@ import getUserName from "./utils/getUserName.js";
 import ChunkData from "./utils/getChunkData.js";
 import dirData from "./src/dirData.js";
 import appErrors from "./src/appErrors.js";
-import nav from "./src/navigation.js";
+import nav from "./src/navOperations.js";
 import fsOperations from "./src/fsOperations.js";
 
 const startFileManager = async () => {
