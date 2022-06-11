@@ -1,6 +1,7 @@
 import getUserName from "./utils/getUserName.js";
 import ChunkData from "./utils/getChunkData.js";
 import nav from "./src/navigation.js";
+import fsOperations from "./src/fsOperations.js";
 
 const startFileManager = async () => {
   try {
@@ -22,16 +23,21 @@ const startFileManager = async () => {
 
         switch (chunkData.command) {
           case ".exit":
-            writable.write(
-              `Thank you for using File Manager, ${username}!\n\n`
-            );
-            process.exit();
+            if (chunkData.args.length) {
+              nav.showIncorrectArgsError();
+            } else {
+              writable.write(
+                `Thank you for using File Manager, ${username}!\n\n`
+              );
+
+              process.exit();
+            }
             break;
           case "up":
-            nav.up();
+            nav.up(chunkData.args);
             break;
           case "ls":
-            nav.ls();
+            nav.ls(chunkData.args);
             break;
           case "cd":
             nav.cd(chunkData.args);

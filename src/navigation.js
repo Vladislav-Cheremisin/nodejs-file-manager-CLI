@@ -1,11 +1,10 @@
-import os from "os";
 import fs from "fs/promises";
 import path from "path";
+import dirData from "./dirData.js";
 
 class Navigator {
   constructor() {
-    this.homeDir = os.homedir();
-    this.currentDir = this.homeDir;
+    this.currentDir = dirData.getDirData();
     this.writable = process.stdout;
     this.pathSep = path.sep;
   }
@@ -33,40 +32,56 @@ class Navigator {
     this.showDirInfo();
   }
 
+  showIncorrectArgsError() {
+    this.writable.write(
+      "Operation failed! Please use this command without any arguments.\n"
+    );
+  }
+
   showInvalidInput() {
     this.writable.write(
       `Invalid input, please try again or use "help" to read about available commands.\n`
     );
   }
 
-  up() {
-    if (!this._isRootDir()) {
-      const pathParts = this.currentDir.split(this.pathSep);
+  up(args) {
+    if (args.length) {
+      nav.showIncorrectArgsError();
+    } else {
+      if (!this._isRootDir()) {
+        const pathParts = this.currentDir.split(this.pathSep);
 
-      if (pathParts.length > 2) {
-        this.currentDir = pathParts
-          .splice(0, pathParts.length - 1)
-          .join(this.pathSep);
-      } else {
-        this.currentDir = pathParts[0] + this.pathSep;
+        if (pathParts.length > 2) {
+          this.currentDir = pathParts
+            .splice(0, pathParts.length - 1)
+            .join(this.pathSep);
+          dirData.setDirData(this.currentDir);
+        } else {
+          this.currentDir = pathParts[0] + this.pathSep;
+          dirData.setDirData(this.currentDir);
+        }
       }
     }
 
     this.showDirInfo();
   }
 
-  async ls() {
-    try {
-      console.log(await fs.readdir(this.currentDir));
-
-      this.showDirInfo();
-    } catch (err) {
-      if (err) {
-        this.writable.write(
-          "Operation failed! Cannot read content from system folder, please change it with using 'up' command and try again\n"
-        );
+  async ls(args) {
+    if (args.length) {
+      nav.showIncorrectArgsError();
+    } else {
+      try {
+        console.log(await fs.readdir(this.currentDir));
 
         this.showDirInfo();
+      } catch (err) {
+        if (err) {
+          this.writable.write(
+            "Operation failed! Cannot read content from system folder, please change it with using 'up' command and try again\n"
+          );
+
+          this.showDirInfo();
+        }
       }
     }
   }
@@ -94,6 +109,7 @@ class Navigator {
 
         if ((await fs.lstat(pathAbs)).isDirectory()) {
           this.currentDir = pathAbs;
+          dirData.setDirData(this.currentDir);
         } else {
           this.writable.write(
             `Operation failed! ${path.basename(
