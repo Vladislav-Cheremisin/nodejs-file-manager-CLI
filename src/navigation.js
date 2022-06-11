@@ -7,11 +7,12 @@ class Navigator {
     this.homeDir = os.homedir();
     this.currentDir = this.homeDir;
     this.writable = process.stdout;
+    this.pathSep = path.sep;
   }
 
   _isRootDir() {
-    const pathParts = this.currentDir.split("\\");
-    const rootDir = pathParts[0] + "\\";
+    const pathParts = this.currentDir.split(this.pathSep);
+    const rootDir = pathParts[0] + this.pathSep;
 
     if (this.currentDir === rootDir) {
       return true;
@@ -40,12 +41,14 @@ class Navigator {
 
   up() {
     if (!this._isRootDir()) {
-      const pathParts = this.currentDir.split("\\");
+      const pathParts = this.currentDir.split(this.pathSep);
 
       if (pathParts.length > 2) {
-        this.currentDir = pathParts.splice(0, pathParts.length - 1).join("\\");
+        this.currentDir = pathParts
+          .splice(0, pathParts.length - 1)
+          .join(this.pathSep);
       } else {
-        this.currentDir = pathParts[0] + "\\";
+        this.currentDir = pathParts[0] + this.pathSep;
       }
     }
 
