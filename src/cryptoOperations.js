@@ -1,5 +1,5 @@
 import fsPromise from "fs/promises";
-import fs, { read } from "fs";
+import fs from "fs";
 import path from "path";
 import crypto from "crypto";
 import appErrors from "./appErrors.js";

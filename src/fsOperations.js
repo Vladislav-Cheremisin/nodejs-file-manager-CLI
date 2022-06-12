@@ -72,6 +72,7 @@ class FsOperations {
             flag: "wx",
           })
           .then(() => {
+            this.writable.write(`File ${fileName} was created successfully.\n`);
             dirData.showDirInfo();
           })
           .catch((err) => {
@@ -204,7 +205,7 @@ class FsOperations {
                   this.writable.write(
                     `file ${path.basename(
                       fileAbsPath
-                    )} was copied successfully\n`
+                    )} was copied successfully.\n`
                   );
 
                   dirData.showDirInfo();
@@ -337,7 +338,7 @@ class FsOperations {
                   this.writable.write(
                     `file ${path.basename(
                       fileAbsPath
-                    )} was moved successfully\n`
+                    )} was moved successfully.\n`
                   );
 
                   dirData.showDirInfo();
