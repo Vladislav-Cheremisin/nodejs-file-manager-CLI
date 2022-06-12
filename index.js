@@ -7,6 +7,7 @@ import fsOperations from "./src/fsOperations.js";
 import osOperations from "./src/osOperations.js";
 import cryptoOperations from "./src/cryptoOperations.js";
 import zlibOperations from "./src/zlibOperations.js";
+import additional from "./src/additionalOperations.js";
 
 const startFileManager = async () => {
   try {
@@ -76,6 +77,9 @@ const startFileManager = async () => {
             break;
           case "decompress":
             zlibOperations.decompress(chunkData.args);
+            break;
+          case "help":
+            additional.help(chunkData.args);
             break;
           default:
             appErrors.showInvalidInput();
