@@ -3,7 +3,7 @@ import path from "path";
 import dirData from "./dirData.js";
 import appErrors from "./appErrors.js";
 
-class Navigator {
+class NavOperations {
   constructor() {
     this.currentDir = dirData.getDirData();
     this.writable = process.stdout;
@@ -92,6 +92,6 @@ class Navigator {
   }
 }
 
-const nav = new Navigator();
+const navOperations = new NavOperations();
 
-export default nav;
+export default navOperations;

@@ -2,8 +2,9 @@ import getUserName from "./utils/getUserName.js";
 import ChunkData from "./utils/getChunkData.js";
 import dirData from "./src/dirData.js";
 import appErrors from "./src/appErrors.js";
-import nav from "./src/navOperations.js";
+import navOperations from "./src/navOperations.js";
 import fsOperations from "./src/fsOperations.js";
+import osOperations from "./src/osOperations.js";
 
 const startFileManager = async () => {
   try {
@@ -36,13 +37,13 @@ const startFileManager = async () => {
             }
             break;
           case "up":
-            nav.up(chunkData.args);
+            navOperations.up(chunkData.args);
             break;
           case "ls":
-            nav.ls(chunkData.args);
+            navOperations.ls(chunkData.args);
             break;
           case "cd":
-            nav.cd(chunkData.args);
+            navOperations.cd(chunkData.args);
             break;
           case "cat":
             fsOperations.cat(chunkData.args);
@@ -61,6 +62,9 @@ const startFileManager = async () => {
             break;
           case "rm":
             fsOperations.rm(chunkData.args);
+            break;
+          case "os":
+            osOperations.os(chunkData.args);
             break;
           default:
             appErrors.showInvalidInput();
