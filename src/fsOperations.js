@@ -120,13 +120,24 @@ class FsOperations {
         newFilePath = newFilePath.join(this.pathSep);
 
         await fsPromise.access(pathAbs);
-        await fsPromise.rename(pathAbs, newFilePath);
 
-        this.writable.write(
-          `${path.basename(pathAbs)} was renamed successfully.\n`
-        );
+        if ((await fsPromise.lstat(pathAbs)).isFile()) {
+          await fsPromise.rename(pathAbs, newFilePath);
 
-        dirData.showDirInfo();
+          this.writable.write(
+            `${path.basename(pathAbs)} was renamed successfully.\n`
+          );
+
+          dirData.showDirInfo();
+        } else {
+          this.writable.write(
+            `Operation failed! ${path.basename(
+              pathAbs
+            )} is folder or system file.\n`
+          );
+
+          dirData.showDirInfo();
+        }
       }
     } catch (err) {
       if (err) {
@@ -230,9 +241,10 @@ class FsOperations {
           pathAbs = path.join(this.currentDir, filePath);
         }
 
-        await fsPromise
-          .access(pathAbs)
-          .then(() => {
+        try {
+          await fsPromise.access(pathAbs);
+
+          if ((await fsPromise.lstat(pathAbs)).isFile()) {
             fsPromise.unlink(pathAbs);
 
             this.writable.write(
@@ -240,16 +252,24 @@ class FsOperations {
             );
 
             dirData.showDirInfo();
-          })
-          .catch((err) => {
-            if (err) {
-              this.writable.write(
-                `Operation failed! ${path.basename(pathAbs)} doesn't exist.\n`
-              );
+          } else {
+            this.writable.write(
+              `Operation failed! ${path.basename(
+                pathAbs
+              )} is folder or system file.\n`
+            );
 
-              dirData.showDirInfo();
-            }
-          });
+            dirData.showDirInfo();
+          }
+        } catch (err) {
+          if (err) {
+            this.writable.write(
+              `Operation failed! ${path.basename(pathAbs)} doesn't exist.\n`
+            );
+
+            dirData.showDirInfo();
+          }
+        }
       }
     } catch (err) {
       if (err) {
