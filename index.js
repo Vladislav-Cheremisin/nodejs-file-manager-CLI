@@ -5,6 +5,7 @@ import appErrors from "./src/appErrors.js";
 import navOperations from "./src/navOperations.js";
 import fsOperations from "./src/fsOperations.js";
 import osOperations from "./src/osOperations.js";
+import cryptoOperations from "./src/cryptoOperations.js";
 
 const startFileManager = async () => {
   try {
@@ -65,6 +66,9 @@ const startFileManager = async () => {
             break;
           case "os":
             osOperations.os(chunkData.args);
+            break;
+          case "hash":
+            cryptoOperations.hash(chunkData.args);
             break;
           default:
             appErrors.showInvalidInput();
