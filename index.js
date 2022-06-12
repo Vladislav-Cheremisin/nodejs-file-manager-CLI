@@ -56,6 +56,9 @@ const startFileManager = async () => {
           case "cp":
             fsOperations.cp(chunkData.args);
             break;
+          case "mv":
+            fsOperations.mv(chunkData.args);
+            break;
           case "rm":
             fsOperations.rm(chunkData.args);
             break;

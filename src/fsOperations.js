@@ -277,6 +277,87 @@ class FsOperations {
       }
     }
   }
+
+  async mv(args) {
+    try {
+      if (!args || args.length !== 2) {
+        appErrors.showIncorrectArgsError();
+      } else {
+        this.currentDir = dirData.getDirData();
+        const filePath = args[0];
+        const dirPath = args[1];
+        let fileAbsPath = null;
+        let dirAbsPath = null;
+
+        if (path.isAbsolute(filePath)) {
+          fileAbsPath = filePath;
+        } else {
+          fileAbsPath = path.join(this.currentDir, filePath);
+        }
+
+        if (path.isAbsolute(dirPath)) {
+          dirAbsPath = dirPath;
+        } else {
+          dirAbsPath = path.join(this.currentDir, dirPath);
+        }
+
+        await fsPromise.access(fileAbsPath);
+        await fsPromise.access(dirAbsPath);
+
+        if (
+          (await fsPromise.lstat(fileAbsPath)).isFile() &&
+          (await fsPromise.lstat(dirAbsPath)).isDirectory()
+        ) {
+          const newFilePath = path.join(dirAbsPath, path.basename(fileAbsPath));
+
+          await fsPromise
+            .access(newFilePath)
+            .then(() => {
+              this.writable.write(
+                `Operation failed! File ${path.basename(
+                  fileAbsPath
+                )} already exists in ${path.basename(dirAbsPath)} folder.\n`
+              );
+
+              dirData.showDirInfo();
+            })
+            .catch((err) => {
+              if (err) {
+                const readStream = fs.createReadStream(fileAbsPath);
+                const writeStream = fs.createWriteStream(newFilePath);
+
+                readStream.pipe(writeStream).on("error", (err) => {
+                  if (err) {
+                    appErrors.showOperationError();
+                  }
+                });
+
+                readStream.on("close", () => {
+                  fsPromise.unlink(fileAbsPath);
+                  this.writable.write(
+                    `file ${path.basename(
+                      fileAbsPath
+                    )} was moved successfully\n`
+                  );
+
+                  dirData.showDirInfo();
+                });
+              }
+            });
+        } else {
+          this.writable.write(
+            "Operation failed! Entered file or folder doesn't exists.\n"
+          );
+
+          dirData.showDirInfo();
+        }
+      }
+    } catch (err) {
+      if (err) {
+        appErrors.showWrongPathError();
+      }
+    }
+  }
 }
 
 const fsOperations = new FsOperations();
